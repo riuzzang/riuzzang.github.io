@@ -12,6 +12,8 @@
   :root { --bg: #0b0f16; --card: #141a24; --text: #e7ebf2; --muted: #9aa5b8; --rule: #232b38; --accent: #ffd54d; --button: #ffd54d; --button-text: #171b24; }
 }
 * { box-sizing: border-box; }
+img { max-width: 100%; }
+html, body { overflow-x: hidden; }
 body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", sans-serif; }
 main { max-width: 760px; margin: 0 auto; padding: 48px 16px 64px; }
 header h1 { font-size: 2rem; margin: 0; letter-spacing: -0.01em; }
@@ -20,6 +22,7 @@ h2 { font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; colo
 .game { background: var(--card); border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; }
 .game img.banner { display: block; width: 100%; height: auto; }
 .game .body { display: flex; gap: 16px; padding: 18px; align-items: flex-start; }
+.game .body > div { min-width: 0; flex: 1; }
 .game img.icon { width: 72px; height: 72px; border-radius: 16px; flex: none; }
 .game h3 { margin: 0 0 4px; font-size: 1.25rem; }
 .game p { margin: 0 0 12px; color: var(--muted); }
