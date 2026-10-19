@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>riuzzang games</title>
+<meta name="description" content="Small games by riuzzang, the developer of OnlyDefense.">
+<link rel="icon" type="image/png" href="onlydefense/icon.png">
+<style>
+:root { --bg: #f6f7fa; --card: #ffffff; --text: #171b24; --muted: #5b6577; --rule: #e1e5ec; --accent: #9a6c00; --button: #171b24; --button-text: #ffffff; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0b0f16; --card: #141a24; --text: #e7ebf2; --muted: #9aa5b8; --rule: #232b38; --accent: #ffd54d; --button: #ffd54d; --button-text: #171b24; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 48px 16px 64px; }
+header h1 { font-size: 2rem; margin: 0; letter-spacing: -0.01em; }
+header p { color: var(--muted); margin: 4px 0 0; }
+h2 { font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 40px 0 12px; }
+.game { background: var(--card); border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; }
+.game img.banner { display: block; width: 100%; height: auto; }
+.game .body { display: flex; gap: 16px; padding: 18px; align-items: flex-start; }
+.game img.icon { width: 72px; height: 72px; border-radius: 16px; flex: none; }
+.game h3 { margin: 0 0 4px; font-size: 1.25rem; }
+.game p { margin: 0 0 12px; color: var(--muted); }
+.links { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.button { display: inline-block; padding: 8px 14px; border-radius: 8px; background: var(--button); color: var(--button-text); text-decoration: none; font-weight: 600; }
+a { color: var(--accent); }
+footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>riuzzang</h1>
+    <p>Small games made with care. · 작은 게임을 만듭니다.</p>
+  </header>
+
+  <h2>Games</h2>
+  <article class="game">
+    <img class="banner" src="onlydefense/feature.jpg" width="1024" height="500" alt="OnlyDefense: a three-floor building with portals, towers and marching robots">
+    <div class="body">
+      <img class="icon" src="onlydefense/icon.png" width="72" height="72" alt="">
+      <div>
+        <h3>OnlyDefense</h3>
+        <p>A tower defense game where every map is a three-floor building. Enemies drop through portals floor by floor, so defend every level. Campaign, Endless and a 60-sector Planet Conquest, in 9 languages.</p>
+        <div class="links">
+          <a class="button" href="https://play.google.com/store/apps/details?id=com.riuzzang.onlydefense">Google Play</a>
+          <a href="onlydefense/privacy.html">Privacy Policy</a>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <footer>
+    Contact: <a href="mailto:riuzzang@gmail.com">riuzzang@gmail.com</a>
+  </footer>
+</main>
+</body>
+</html>
