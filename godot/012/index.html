@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>점프가 답답한 건 손 탓이 아닙니다 | Godot 기초 12</title>
+<meta name="description" content="점프 게임의 조작이 기분 좋아지는 세 가지를 코드 몇 줄로 넣습니다. 코요테 타임, 점프 버퍼, 가변 점프. 같은 순간에 같은 버튼을 눌러도 결과가 달라지는 것을 나란히 비교합니다.">
+<style>
+:root { --bg: #f6f7fa; --card: #ffffff; --text: #171b24; --muted: #5b6577; --rule: #e1e5ec; --accent: #9a6c00; --button: #171b24; --button-text: #ffffff; --code: #eef1f6; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0b0f16; --card: #141a24; --text: #e7ebf2; --muted: #9aa5b8; --rule: #232b38; --accent: #ffd54d; --button: #ffd54d; --button-text: #171b24; --code: #0f141d; }
+}
+* { box-sizing: border-box; }
+img { max-width: 100%; height: auto; }
+html, body { overflow-x: hidden; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.7 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", sans-serif; word-break: keep-all; }
+main { max-width: 760px; margin: 0 auto; padding: 48px 16px 64px; }
+header h1 { font-size: 2rem; margin: 0; letter-spacing: -0.01em; }
+header p { color: var(--muted); margin: 4px 0 0; }
+h2 { font-size: 1.15rem; margin: 36px 0 12px; }
+.ep { display: flex; gap: 16px; background: var(--card); border: 1px solid var(--rule); border-radius: 14px; padding: 14px; align-items: flex-start; }
+.ep + .ep { margin-top: 14px; }
+.ep img { width: 200px; flex: none; border-radius: 8px; display: block; }
+.ep > div { min-width: 0; flex: 1; }
+.ep h3 { margin: 0 0 4px; font-size: 1.05rem; }
+.ep p { margin: 0 0 10px; color: var(--muted); font-size: 0.95rem; }
+.links { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.button { display: inline-block; padding: 8px 14px; border-radius: 8px; background: var(--button); color: var(--button-text); text-decoration: none; font-weight: 600; }
+.soon { color: var(--muted); font-size: 0.9rem; }
+a { color: var(--accent); }
+pre { background: var(--code); border: 1px solid var(--rule); border-radius: 10px; padding: 14px; overflow-x: auto; font: 13px/1.55 ui-monospace, "Cascadia Mono", Consolas, monospace; tab-size: 4; }
+ol { padding-left: 1.3em; }
+.hero { border-radius: 14px; border: 1px solid var(--rule); display: block; }
+footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.9rem; }
+@media (max-width: 520px) { .ep { flex-direction: column; } .ep img { width: 100%; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <p><a href="../">← Godot화 편 목록</a></p>
+    <h1>점프가 답답한 건 손 탓이 아닙니다</h1>
+    <p>Godot 기초 12</p>
+  </header>
+  <p><img class="hero" src="thumb.jpg" width="1280" height="720" alt=""></p>
+  <p>점프 게임의 조작이 기분 좋아지는 세 가지를 코드 몇 줄로 넣습니다.<br>코요테 타임, 점프 버퍼, 가변 점프. 같은 순간에 같은 버튼을 눌러도 결과가 달라지는 것을 나란히 비교합니다.</p>
+  <div class="links">
+    <a class="button" href="jump-feel.zip" download>예제 프로젝트 받기 (.zip)</a>
+    <span class="soon">영상은 곧 공개됩니다</span>
+  </div>
+  <h2>여는 방법</h2>
+  <ol>
+    <li>받은 파일의 압축을 풉니다.</li>
+    <li>Godot 4.7.2을 켜고, 프로젝트 매니저에서 "가져오기"를 누릅니다.</li>
+    <li>압축을 푼 폴더 안의 <code>project.godot</code>을 고릅니다.</li>
+    <li>오른쪽 위의 실행 버튼(F5)을 누릅니다.</li>
+  </ol>
+  <p>실행하면 영상에 나온 비교 장면이 자동으로 재생됩니다. 위쪽 줄은 세 가지를 끈 캐릭터, 아래쪽 줄은 켠 캐릭터입니다. 강의에서 본 코드는 player.gd에 있습니다.</p>
+  <h2>player.gd</h2>
+  <pre>extends CharacterBody2D
+## 점프가 기분 좋아지는 세 가지: 코요테 타임, 점프 버퍼, 가변 점프.
+
+signal jumped
+signal landed
+
+const SPEED := 240.0
+const JUMP_VELOCITY := -660.0
+const GRAVITY := 1960.0
+const COYOTE_TIME := 0.1  # 발판을 떠난 뒤에도 점프를 받아주는 시간
+const BUFFER_TIME := 0.1  # 착지 전에 누른 점프를 기억하는 시간
+const JUMP_CUT := 0.4     # 버튼을 일찍 떼면 남기는 상승 속도의 비율
+
+@export var use_coyote := true
+@export var use_buffer := true
+@export var use_variable := true
+
+var pilot = null          # 녹화용 자동 조종. 없으면 키보드를 읽는다.
+var coyote_left := 0.0
+var buffer_left := 0.0
+var rising := false       # 점프로 올라가는 중인가
+var was_on_floor := true
+
+
+func _physics_process(delta: float) -&gt; void:
+	var on_floor := is_on_floor()
+	if on_floor and not was_on_floor:
+		landed.emit()
+	was_on_floor = on_floor
+
+	# 1. 코요테 타임: 바닥에 있는 동안 시간을 채워 두고, 떠나면 줄인다.
+	if on_floor:
+		coyote_left = COYOTE_TIME if use_coyote else 0.0
+	else:
+		coyote_left -= delta
+		velocity.y += GRAVITY * delta
+
+	# 2. 점프 버퍼: 누른 사실을 잠깐 기억한다.
+	var pressed := _jump_pressed()
+	if pressed and use_buffer:
+		buffer_left = BUFFER_TIME
+	else:
+		buffer_left -= delta
+
+	var wants_jump := pressed or buffer_left &gt; 0.0
+	var can_jump := on_floor or coyote_left &gt; 0.0
+	if wants_jump and can_jump:
+		velocity.y = JUMP_VELOCITY
+		coyote_left = 0.0
+		buffer_left = 0.0
+		rising = true
+		jumped.emit()
+
+	# 3. 가변 점프: 올라가는 중에 버튼을 떼면 상승을 줄인다.
+	if rising and velocity.y &gt;= 0.0:
+		rising = false
+	if use_variable and rising and not _jump_held():
+		velocity.y *= JUMP_CUT
+		rising = false
+
+	velocity.x = _axis() * SPEED
+	move_and_slide()
+
+
+func reset() -&gt; void:
+	velocity = Vector2.ZERO
+	coyote_left = 0.0
+	buffer_left = 0.0
+	rising = false
+	was_on_floor = true
+
+
+func _axis() -&gt; float:
+	return pilot.axis if pilot else Input.get_axis(&quot;ui_left&quot;, &quot;ui_right&quot;)
+
+
+func _jump_pressed() -&gt; bool:
+	return pilot.pressed if pilot else Input.is_action_just_pressed(&quot;ui_accept&quot;)
+
+
+func _jump_held() -&gt; bool:
+	return pilot.held if pilot else Input.is_action_pressed(&quot;ui_accept&quot;)
+</pre>
+
+  <footer>Godot화는 Godot 재단과 관계없는 비공식 채널입니다. 기준 버전: Godot 4.7.2</footer>
+</main>
+</body>
+</html>
